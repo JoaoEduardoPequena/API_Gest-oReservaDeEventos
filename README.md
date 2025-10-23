@@ -1,50 +1,73 @@
-# 📬 API Message Pub/Sub com Redis e ASP.NET Core
+🎟️ API de Reserva de Eventos com Redis e RabbitMQ
 
-Este projecto demonstra um fluxo assíncrono de pedidos de restaurante usando **Redis Pub/Sub**, **ASP.NET Core 8**, **Clean Architecture** e **Background Services**.
+Este projeto demonstra um fluxo assíncrono de pedidos de reserva de eventos utilizando Redis, RabbitMQ, ASP.NET Core 8, Clean Architecture e Background Services.
 
----
-
-## 📌 Visão Geral
+📌 Visão Geral
 
 Imagine o seguinte cenário:
 
-Um cliente realiza um pedido (nome, e-mail e descrição do pedido).  
-A API salva o pedido no banco de dados e publica uma mensagem no Redis.  
-Um serviço em segundo plano escuta esse canal e envia um e-mail de confirmação ao cliente — tudo de forma assíncrona e desacoplada.
+Um utilizador realiza um pedido de reserva para um evento (nome, e-mail, ID do evento e quantidade de bilhetes).
+A API recebe o pedido, armazena os dados temporariamente no Redis e publica uma mensagem no RabbitMQ.
+Um serviço em segundo plano (Worker Service) consome essa mensagem, gera uma ficha de confirmação da reserva e envia um e-mail de confirmação ao cliente — tudo de forma assíncrona e desacoplada.
 
----
+🔄 Fluxo de Funcionamento
 
-## 🔄 Fluxo de Funcionamento
+Cliente envia POST /api/eventos/reservas
 
-1. **Cliente** envia `POST /api/pedidos`
-2. **API**:
-   - Salva o pedido no banco via EF Core
-   - Publica a mensagem no canal Redis `channel-pedido-novos`
-3. **NotificadorPedidos.Worker**:
-   - Escuta o canal Redis
-   - Ao receber a mensagem, envia um e-mail de confirmação ao cliente
+API:
 
----
+Valida e armazena temporariamente os dados da reserva no Redis
 
-## 🧠 Quando Usar Redis Pub/Sub?
+Publica a mensagem no RabbitMQ (queue: evento-reserva-criada)
+
+ReservaEventos.Worker:
+
+Consome as mensagens publicadas na fila do RabbitMQ
+
+Gera a ficha de confirmação da reserva (PDF)
+
+Envia um e-mail de confirmação ao cliente
+
+🧠 Quando Usar RabbitMQ?
 
 ✅ Use quando:
-- Precisa de comunicação em tempo real
-- Não é necessário armazenar ou reprocessar mensagens
-- Deseja baixo acoplamento entre serviços
+
+Precisa de garantia de entrega da mensagem
+
+Deseja processar tarefas em background de forma confiável
+
+Quer desacoplar a API do processamento pesado (ex: geração de PDFs, envio de e-mails)
+
+O sistema precisa de escalabilidade e resiliência
 
 ❌ Evite quando:
-- Precisa de persistência ou confirmação de entrega
-- Precisa de reprocessamento ou tolerância a falhas  
-👉 Nesse caso, considere usar: **RabbitMQ**, **Kafka** ou **Azure Service Bus**
 
----
+Precisa apenas de notificações rápidas e temporárias
 
-## ⚙️ Tecnologias Utilizadas
+Não é necessário reprocessar mensagens
+👉 Nesse caso, Redis Pub/Sub pode ser uma opção mais simples e leve
 
-- [ASP.NET Core 8]
-- Clean Architecture
-- [Redis](https://redis.io/) (Pub/Sub)
-- CQRS + MediatR
-- SQL Server + Entity Framework Core
-- BackgroundService com Redis Listener
+⚙️ Tecnologias Utilizadas
+
+ASP.NET Core 8
+
+Redis
+ – Cache e armazenamento temporário
+
+RabbitMQ
+ – Mensageria assíncrona
+
+MassTransit
+ – Integração com RabbitMQ
+
+MailKit
+ ou SendGrid
+ – Envio de e-mails
+
+CQRS + MediatR
+
+Clean Architecture
+
+Worker Service (BackgroundService)
+
+Docker + Docker Compose
