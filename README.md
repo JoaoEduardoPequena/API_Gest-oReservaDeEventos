@@ -1,8 +1,8 @@
-🎟️ API de Reserva de Eventos com Redis e RabbitMQ
+## 🎟️ API de Reserva de Eventos com Redis e RabbitMQ
 
 Este projeto demonstra um fluxo assíncrono de pedidos de reserva de eventos utilizando Redis, RabbitMQ, ASP.NET Core 8, Clean Architecture e Background Services.
 
-📌 Visão Geral
+## 📌 Visão Geral
 
 Imagine o seguinte cenário:
 
@@ -10,17 +10,17 @@ Um utilizador realiza um pedido de reserva para um evento (nome, e-mail, ID do e
 A API recebe o pedido, armazena os dados temporariamente no Redis e publica uma mensagem no RabbitMQ.
 Um serviço em segundo plano (Worker Service) consome essa mensagem, gera uma ficha de confirmação da reserva e envia um e-mail de confirmação ao cliente — tudo de forma assíncrona e desacoplada.
 
-🔄 Fluxo de Funcionamento
+## 🔄 Fluxo de Funcionamento
 
-Cliente envia POST /api/eventos/reservas
+Cliente envia POST /api/reservas
 
-API:
+## API:
 
 Valida e armazena temporariamente os dados da reserva no Redis
 
 Publica a mensagem no RabbitMQ (queue: evento-reserva-criada)
 
-ReservaEventos.Worker:
+## ReservaEventos.Worker:
 
 Consome as mensagens publicadas na fila do RabbitMQ
 
@@ -28,7 +28,7 @@ Gera a ficha de confirmação da reserva (PDF)
 
 Envia um e-mail de confirmação ao cliente
 
-🧠 Quando Usar RabbitMQ?
+## 🧠 Quando Usar RabbitMQ?
 
 ✅ Use quando:
 
@@ -40,14 +40,14 @@ Quer desacoplar a API do processamento pesado (ex: geração de PDFs, envio de e
 
 O sistema precisa de escalabilidade e resiliência
 
-❌ Evite quando:
+## ❌ Evite quando:
 
 Precisa apenas de notificações rápidas e temporárias
 
 Não é necessário reprocessar mensagens
 👉 Nesse caso, Redis Pub/Sub pode ser uma opção mais simples e leve
 
-⚙️ Tecnologias Utilizadas
+## ⚙️ Tecnologias Utilizadas
 
 ASP.NET Core 8
 
@@ -61,7 +61,6 @@ MassTransit
  – Integração com RabbitMQ
 
 MailKit
- ou SendGrid
  – Envio de e-mails
 
 CQRS + MediatR
