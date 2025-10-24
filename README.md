@@ -1,6 +1,6 @@
 ## 🎟️ API de Reserva de Eventos com Redis e RabbitMQ
 
-Este projeto demonstra um fluxo assíncrono de pedidos de reserva de eventos utilizando Redis, RabbitMQ, ASP.NET Core 8, Clean Architecture e Background Services.
+Este projeto demonstra um fluxo assíncrono de pedidos de reserva de eventos utilizando Redis, RabbitMQ, ASP.NET Core 8, CQRS, MediatR,Clean Architecture e Background Services.
 
 ## 📌 Visão Geral
 
@@ -20,13 +20,11 @@ Valida e armazena temporariamente os dados da reserva no Redis
 
 Publica a mensagem no RabbitMQ (queue: evento-reserva-criada)
 
-## ReservaEventos.Worker:
+## ProcessamentoReserva.Worker:
 
 Consome as mensagens publicadas na fila do RabbitMQ
 
-Gera a ficha de confirmação da reserva (PDF)
-
-Envia um e-mail de confirmação ao cliente
+Gera a ficha de confirmação da reserva (PDF) e Envia um e-mail de confirmação ao cliente
 
 ## 🧠 Quando Usar RabbitMQ?
 
